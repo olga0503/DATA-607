@@ -1,0 +1,324 @@
+---
+title: "Project 2"
+author: "Olya Fomicheva"
+date: "10/8/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r setup2, include=FALSE}
+options(repos = c(CRAN = "http://cran.rstudio.com"))
+install.packages("tidyr")
+library(tidyr)
+install.packages("dplyr")
+library(dplyr)
+install.packages("stringr")
+library(stringr)
+```
+
+
+##Dataset 1 - Drug use by age
+
+"Obtained from FiveThirtyEight, many of the columns are the drug names and they could become row objects. The table is based on the age of the user and it would be better to read if the ages read across the table as column headers.
+
+The readme file is on the page prior. 
+
+https://github.com/fivethirtyeight/data/blob/master/drug-use-by-age/drug-use-by-age.csv"
+
+
+In order to analyse Drug use by age data set I performed the following steps:
+
+1. Read csv file.
+
+```{r read-drugs}
+
+drugs <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/drug-use-by-age/drug-use-by-age.csv")
+
+head(drugs)
+
+
+```
+
+2. Found out data set dimensions and variables names.
+
+```{r dim-1}
+
+dim(drugs)
+colnames(drugs)
+
+```
+
+3. Convert all variables except age to numeric type.
+
+```{r factor-to-numeric}
+
+drugs <- drugs %>%  mutate_at(vars(-age),funs(as.numeric(.)))
+head(drugs)
+```
+
+4. Transform wide data structure to long data structure.
+
+```{r wide-to-long-1}
+
+drugs_long <- drugs %>% gather(drug, percentage, colnames(drugs)[3]:colnames(drugs)[28])  
+
+head(drugs_long)
+
+```
+
+5. Modify "pain reliever" variable name.
+
+```{r modify-var-name}
+
+drugs_long <- drugs_long %>% mutate(drug = str_replace(drug, "pain.releiver", "pain releiver"))
+head(drugs_long)
+
+```
+
+6. Separate drug name from drug frequency and usage.
+
+```{r separate-column}
+
+drugs_long <- drugs_long %>% separate(drug, c("drug_name", "use_frequency"), sep = "\\.")
+head(drugs_long)
+
+```
+
+7. Transform long data structure to infrastructure.
+
+```{r long-to-wide}
+
+drugs_wide <- drugs_long  %>% spread(use_frequency, percentage)
+head(drugs_wide)
+
+```
+
+
+
+8. Figured out mean, median and standard deviation of overall drug usage for different age groups.
+
+```{r mean-sd}
+
+group_by(drugs_wide, age)  %>% summarise(mean_usage = mean(use),median_usage = median(use), sd_usage = sd(use))
+
+```
+
+9. Figured out least popular drugs by age.
+
+```{r least-used-drugs-by-age}
+
+group_by(drugs_wide, age)  %>% filter(use == min(use)) %>% arrange(age)  %>% select (age,drug_name,use)
+
+```
+
+10. Figured out most popular drugs by age.
+
+```{r most-used-drugs-by-age}
+
+group_by(drugs_wide, age)  %>% filter(use == max(use)) %>% arrange(age)  %>% select (age,drug_name,use)
+
+```
+
+11. Figured out least popular age group is specific drug usage.
+
+```{r least-popular-group}
+
+group_by(drugs_wide, drug_name)  %>% filter(use == min(use)) %>% arrange(drug_name) %>% select (drug_name, age, use)
+
+```
+
+12. Figured out most popular age group is specific drug usage.
+
+```{r most-popular-group}
+
+group_by(drugs_wide, drug_name)  %>% filter(use == max(use)) %>% arrange(drug_name) %>% select (drug_name, age, use)
+
+```
+
+13. Figured out the most popular drug among all ages.
+
+```{r most-popular-drug-all-ages}
+
+group_by(drugs_wide, drug_name) %>% summarise(sum_usage=sum(use)) %>% arrange(desc(sum_usage)) 
+
+```
+
+
+## Dataset 2 - Yoga
+
+"I started practicing yoga about a year ago, and realize I'm late to the game. I found this data set about interest in yoga on data.world. I believe it is pulled from Google trends. It is showing the interest in yoga by month by year by state. I believe it is a "wide" table, which might be more easy to perform data analysis by making "long."
+
+After tidying the data, I would be interested to know when people were most interested in yoga in the last 10 years. And where in the US has there been the most interest in yoga (I would guess California)? Could this analysis be a proxy to measure the popularity of yoga by state in the US?
+
+https://data.world/dotslashmaggie/google-trends-yoga/workspace/file?filename=20160502_YogaByStateMonth.csv "
+
+1. Read csv file.
+
+```{r read-yoga}
+
+yoga <- read.csv("https://query.data.world/s/pFEtecI1n6Xrcdft_g4-GSDe8IBMKI")
+head(yoga)
+
+```
+
+2. Remove first meaningless row.
+
+```{r remove-na-row}
+
+yoga <- yoga %>% filter(!is.na(yoga[2]))
+head(yoga)
+
+
+```
+
+3. Figured out data set dimensions and variables names.
+
+```{r dim-2}
+
+dim(yoga)
+colnames(yoga)
+
+```
+
+4. Convert wide structure to long structure.
+
+```{r wide-to-long-2}
+
+yoga_long <- yoga %>% gather(state, number, colnames(yoga)[2]:colnames(yoga)[52])  
+head(yoga_long)
+
+```
+
+5. Rename "X" variable to "name" variable.
+
+```{r col-rename-2}
+
+yoga_long <- yoga_long %>% rename(date = X) 
+head(yoga_long)
+
+```
+
+6. Remove country and state abbreviation from state.
+
+```{r separate-column-2}
+
+yoga_long <- yoga_long %>% separate(state, c("state","country_state"), sep = "\\.\\.") %>% select(-country_state)
+head(yoga_long)
+
+```
+
+7. Figured out the state where yoga was most popular in the last 10 years.
+
+```{r most-popular-yoga-state}
+
+group_by(yoga_long, state)  %>% summarise(sum=sum(number)) %>% arrange(desc(sum))
+
+```
+
+8.  Figure out when people were most interested in yoga in the last 10 years. 
+
+```{r popular-year}
+
+group_by(yoga_long, date)  %>% summarise(sum=sum(number)) %>% arrange(desc(sum))
+
+```
+
+
+## Dataset 3 - Marriage Rates 
+
+" While looking at fivethirtyeight's data on github, I came across one particularly wide dataset, found below. It details marriage rates for a variety of demographics. However, the demographics are demonstrated by column names. Five example column headers are: HS_2534, HS_3544, HS_4554, nokids_HS_2534, kids_HS_2534.
+
+These column titles mean: High School Graduate aged 25-34, High School Graduate 35-44, High School Graduate 45-54, High School Graduate without kids 25-34, and High School Graduate without kids 25-34. All of this data is lost in having it as a column name, and so column headers are values that describe demographics such as education level, age, and whether or not they have children -- they are not variables. 
+
+https://github.com/fivethirtyeight/data/blob/master/marriage/both_sexes.csv "
+
+
+In order to analyse Marriage Rates data set I performed the following steps:
+
+1. Read csv file.
+
+```{r read-marriage}
+
+marriage <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/marriage/both_sexes.csv")
+
+head(marriage)
+
+```
+
+2. Figure out data set dimensions and variable names.
+
+```{r dim-3}
+
+dim(marriage)
+colnames(marriage)
+
+```
+
+3. Transform wide structure to long structure.
+
+```{r wide-to-long-3}
+
+marriage_long <- marriage %>% gather(group, percentage, colnames(marriage)[4]:colnames(marriage)[75]) %>% select(-X)  
+head(marriage_long) 
+
+```
+
+4. Separate column "group".
+
+```{r separate-column-3}
+
+marriage_long <- marriage_long %>% mutate(group = str_replace(group, "kids_", "kids ")) %>% separate(group, c("category", "age"), sep = "\\_")
+head(marriage_long)
+
+```
+
+5. Modig=fy age variable.
+
+```{r age-levels}
+
+levels(factor(marriage_long$age))
+
+```
+
+```{r age-mofification}
+
+marriage_long <- marriage_long %>% mutate(age = str_replace(age, "25", "25-")) %>% mutate(age = str_replace(age, "35", "35-")) %>% mutate(age = str_replace(age, "45", "45-"))
+head(marriage_long)
+
+```
+
+6. Calculate mean, median and standard deviation for each category.
+
+```{r separate-column-31}
+
+group_by(marriage_long,category) %>% summarise(mean=mean(percentage, na.rm = TRUE), median=median(percentage, na.rm = TRUE), sd=sd(percentage, na.rm = TRUE))
+
+```
+
+7. Calculate mean, median and standard deviation for each age group.
+
+```{r meam-median-sd-3}
+
+group_by(marriage_long,age) %>% summarise(mean=mean(percentage, na.rm = TRUE), median=median(percentage, na.rm = TRUE), sd=sd(percentage, na.rm = TRUE))
+
+```
+
+8. Max and min in each category.
+
+```{r max-min-category}
+
+group_by(marriage_long,category) %>% summarise(max=max(percentage, na.rm = TRUE), min=min(percentage, na.rm = TRUE))
+
+```
+
+9. Max and min in each age group.
+
+```{r max-min-age}
+
+group_by(marriage_long,age) %>% summarise(max=max(percentage, na.rm = TRUE), min=min(percentage, na.rm = TRUE))
+
+```
