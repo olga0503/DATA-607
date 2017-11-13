@@ -1,0 +1,62 @@
+---
+title: "Discover Weekly Spotify"
+author: "Olya Fomicheva"
+date: "11/12/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+For my analysis I chose Spotify.
+
+##What is Spotify?
+
+Spotify is a digital music, podcast, and video streaming service that gives users access to millions of songs and other content from artists all over the world.
+
+
+##Who is Spotify target users?
+
+Spotify's audience is everybody who likes and want to listen to music.  However, researches show that 72% of Spotify Listeners are Millennials.  Spotify business marketing global director Jeff Rossi said that the company understands that millennials are listening more frequently and streaming in more places than nonmillennials.  The company believes that  millennials' streaming habits are not as impacted by traditional peak consumption periods such as prime time or drive time as they are connected all day from the moment they wake up.
+
+
+##What is users' key goal?
+
+Users goal is to find favorite songs and artists and explore new songs.
+
+
+##What is the company's key goal?
+
+The company's goal is to attract more users and increase music streaming.
+
+
+##How the goals were accomplished?
+
+In order to achive users' and company's goals Spotify developed recommendation systems that helps users to discover new songs, check related artists and listen to radio songs and songs that are playing now.
+
+One of the most successful recommendation system feature is called "Discover Weekly". Every seven days it generates a playlist of 30 songs based user's personal music preferences.
+
+
+##Discover Weekly
+
+Discover Weekly list is created based on more than 2 billion playlists created by users. Each playlist is based on music fans’ individual tastes. 
+
+Spotify collect and combine this information with the company’s own playlists and compare a user’s listening habits to those of users with similar tastes.  Discover Weekly list includes songs that fit user's profile but that user hasn't listed to.
+
+Also, Spotify creates a profile of each user’s individualized taste in music.  All songs are grouped into clusters of artists and micro-genres.  The clustering was done based on the technology from music analytics firm Echo Nest.  The technique was design to learn about emerging genres by having machines read music sites and analyze how various artists are described.
+
+The approach also uses collaborative filtering (that is most commonly seen in Amazon’s “customers who bought this item also bought…” feature) in combination with natural language processing (that helps to understand music blogs and the titles of playlists) to detect patterns within huge amount of data to improve weekly selections.
+
+In spite of competition from rival streaming service such as Pandora and Apple Music Discover Weekly recommendation system has helped Spotify increase its number of monthly users from 75 million to 100 million at a time, .
+
+#What to improve?
+
+Consumers believe that suggested songs can be repetitive, lack diversity or stick to one or two genres.  Also, users regret that 30 songs suggested by Discover Weekly get disappear after 7 days.
+
+
+#Sources
+
+https://www.slideshare.net/MrChrisJohnson/algorithmic-music-recommendations-at-spotify/36-Open_ProblemsHow_to_go_from
+https://wildgraph.wordpress.com/2015/05/05/collaborative-filtering-recommender-system-use-case-scenario-in-orientdb/
+
