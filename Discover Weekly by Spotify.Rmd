@@ -5,13 +5,10 @@ date: "11/12/2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 For my analysis I chose Spotify.
 
-##What is Spotify?
+<h2>What is Spotify?</h2>
 
 Spotify is a digital music, podcast, and video streaming service that gives users access to millions of songs and other content from artists all over the world.
 
